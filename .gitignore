@@ -1,0 +1,5 @@
+dist/
+node_modules/
+.claude/skills/lens-*/
+.agents/skills/lens-*/
+.claude/settings.json

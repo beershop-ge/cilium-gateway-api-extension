@@ -1,0 +1,82 @@
+.canvas {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.edges {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: opacity 120ms, stroke-width 120ms;
+  }
+
+  // Dashed while the route's attachment is still waiting for the controller.
+  .pending {
+    stroke-dasharray: 5 4;
+  }
+
+  .highlighted {
+    stroke-width: 3;
+  }
+
+  .dimmed {
+    opacity: 0.15;
+  }
+}
+
+.columnHeader {
+  position: absolute;
+  top: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.node {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 120ms, box-shadow 120ms;
+}
+
+.selected {
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+.dimmed {
+  opacity: 0.35;
+}
+
+.stripe {
+  width: 4px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.details {
+  width: 380px;
+  flex-shrink: 0;
+}
+
+.factLabel {
+  white-space: nowrap;
+  vertical-align: top;
+  padding-right: 12px;
+}
+
+.wrap {
+  overflow-wrap: anywhere;
+}
