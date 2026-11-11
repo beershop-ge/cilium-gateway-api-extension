@@ -1,0 +1,84 @@
+// Layout of the policy builder; colours come from Lens's theme variables so both themes work.
+
+.builderGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(340px, 2fr);
+  gap: 16px;
+  align-items: start;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sideColumn {
+  position: sticky;
+  top: 0;
+}
+
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 12px;
+}
+
+.lane {
+  min-height: 120px;
+  padding: 8px;
+}
+
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid var(--grey60);
+  border-radius: 12px;
+  background: var(--grey80);
+  font-size: 12px;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+  }
+}
+
+.rule {
+  border: 1px solid var(--grey60);
+  border-radius: 6px;
+  background: var(--grey80);
+  padding: 8px;
+}
+
+.dropBefore {
+  box-shadow: 0 -3px 0 0 var(--primary);
+}
+
+.handle {
+  display: inline-flex;
+  cursor: grab;
+  color: var(--grey40);
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.peer {
+  border-left: 2px solid var(--grey60);
+  padding-left: 8px;
+}
+
+.narrow {
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.matrixCell {
+  text-align: center;
+}

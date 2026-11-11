@@ -1,18 +1,25 @@
 import { Badge } from "@k8slens/badge";
 import { ClickableDiv, Div, Span, Svg, Table, TBody, Td, Tr } from "@k8slens/element-components";
-import { RefreshIcon } from "@k8slens/icon";
+import { EditIcon, LinkIcon } from "@k8slens/icon";
 import { PlainButton, PrimaryButton, TextInput } from "@k8slens/input-components";
-import { useSubscribable } from "@k8slens/subscribable-react";
-import { useInject, useSyncInject } from "@k8slens/use-inject";
+import { useInject } from "@k8slens/use-inject";
 import { observer } from "mobx-react";
-import { Component, type ReactNode, Suspense, use, useEffect, useMemo } from "react";
-import { gatewayMapStateInjectable, openGatewayResourceInjectable } from "./gateway-map-state.injectable";
-import { gatewaySnapshotBunch } from "./gateway-snapshot.injectable";
+import { type ReactNode, useMemo } from "react";
+import { gatewaySnapshotRequest } from "../gateway/data";
+import type { Snapshot as ClusterSnapshot } from "../kube/snapshot";
+import { openCiliumPageInjectable } from "../navigation/open-page.injectable";
+import { resourceActionsInjectable } from "../resources/resource-actions.injectable";
+import { QueryView, UpdatedAt } from "../ui/components";
+import { PageLayout } from "../ui/page-layout";
+import { useSnapshot } from "../ui/use-cluster";
+import { gatewayMapStateInjectable } from "./gateway-map-state.injectable";
 import styles from "./gateway-map.module.scss";
+import { designerKindNames } from "./kinds";
 import {
   buildTopology,
   columnGap,
   columns,
+  fromClusterSnapshot,
   type Health,
   layOut,
   type MapNode,
@@ -20,9 +27,8 @@ import {
   nodeWidth,
   pathThrough,
   type PositionedNode,
+  type ResourceRef,
 } from "./topology";
-
-const refreshEveryMs = 15_000;
 
 const healthColor = {
   ok: "success",
@@ -38,53 +44,39 @@ const healthLabel: Record<Health, string> = {
   unknown: "Unknown",
 };
 
-class MapErrorBoundary extends Component<{ children: ReactNode }, { error?: Error }> {
-  state: { error?: Error } = {};
+/** The Gateway API map of a cluster: GatewayClass → Gateway → Listener → Route → Backend. */
+export const GatewayMap = observer(({ clusterId }: { clusterId: string }) => {
+  const { state, refresh } = useSnapshot(clusterId, gatewaySnapshotRequest);
+  const mapState = useInject(gatewayMapStateInjectable)()(clusterId);
 
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-
-  render() {
-    return this.state.error ? (
-      <Div $padding="xl" $flex={{ direction: "vertical", gap: "s" }}>
-        <Span $font={{ size: "l", bold: true }}>The Gateway API map could not be loaded</Span>
-        <Span $color="textMuted">{this.state.error.message}</Span>
-      </Div>
-    ) : (
-      this.props.children
-    );
-  }
-}
-
-export const GatewayMap = ({ clusterId }: { clusterId: string }) => (
-  <MapErrorBoundary>
-    <Suspense
-      fallback={
-        <Div $padding="xl" $color="textMuted">
-          Reading Gateway API and Cilium resources…
-        </Div>
+  return (
+    <PageLayout
+      clusterId={clusterId}
+      title="Gateway Map"
+      subtitle="Gateway classes, Gateways, listeners, routes and backends, and how they connect"
+      scroll={false}
+      actions={<UpdatedAt state={state} onRefresh={() => void refresh()} />}
+      toolbar={
+        <TextInput
+          type="search"
+          aria-label="Find on the map"
+          placeholder="Find a gateway, host, route or service"
+          $width={{ width: "11xl" }}
+          value={mapState.search()}
+          onChange={(event) => mapState.setSearch(event.target.value)}
+        />
       }
     >
-      <GatewayMapLoaded clusterId={clusterId} />
-    </Suspense>
-  </MapErrorBoundary>
-);
+      <QueryView state={state} onRetry={() => void refresh()} loadingText="Reading Gateway API and Cilium resources…">
+        {(snapshot) => <GatewayMapLoaded clusterId={clusterId} snapshot={snapshot} />}
+      </QueryView>
+    </PageLayout>
+  );
+});
 
-const GatewayMapLoaded = observer(({ clusterId }: { clusterId: string }) => {
-  const subscribable = useSyncInject(gatewaySnapshotBunch.subscribable, clusterId);
-  const { value, refresh } = useSubscribable(subscribable);
-  const loaded = use(value).get();
+const GatewayMapLoaded = observer(({ clusterId, snapshot }: { clusterId: string; snapshot: ClusterSnapshot }) => {
   const state = useInject(gatewayMapStateInjectable)()(clusterId);
-
-  // Kubectl lists cannot be pushed, so the map polls while it is shown.
-  useEffect(() => {
-    const interval = setInterval(refresh, refreshEveryMs);
-
-    return () => clearInterval(interval);
-  }, [refresh]);
-
-  const topology = useMemo(() => buildTopology(loaded.snapshot), [loaded]);
+  const topology = useMemo(() => buildTopology(fromClusterSnapshot(snapshot)), [snapshot]);
   const layout = useMemo(() => layOut(topology), [topology]);
   const selectedId = state.selectedId();
   const search = state.search().trim().toLowerCase();
@@ -104,47 +96,30 @@ const GatewayMapLoaded = observer(({ clusterId }: { clusterId: string }) => {
     return undefined;
   }, [topology, selectedId, search]);
 
-  const gatewayApiMissing = loaded.notServed.includes("gateways.gateway.networking.k8s.io");
+  const gatewayApiMissing = snapshot.notInstalled.includes("Gateway");
+  const notShown = snapshot.notInstalled.filter((kind) => kind !== "CiliumGatewayClassConfig" && kind !== "ReferenceGrant");
   const count = (column: number) => topology.nodes.filter((node) => node.column === column).length;
   const issues = topology.nodes.filter((node) => node.health === "error" || node.health === "warn").length;
 
   return (
     <Div $flex={{ direction: "vertical" }} $height="full" $backgroundColor="backgroundSecondary">
-      <Div $flex={{ direction: "horizontal", gap: "m", verticalAlign: "center" }} $padding={{ horizontal: "l", vertical: "m" }}>
-        <Span $font={{ size: "l", bold: true }}>Gateway API</Span>
-        <Span $color="textMuted">Cilium gateway topology</Span>
-        <Div $flex={{ direction: "horizontal", gap: "xs" }}>
-          <Badge small label={`${count(1)} gateways`} />
-          <Badge small label={`${count(2)} listeners`} />
-          <Badge small label={`${count(3)} routes`} />
-          <Badge small label={`${count(4)} backends`} />
-          {issues > 0 && <Badge small label={`${issues} need attention`} $backgroundColor="warning" $color="white" />}
-        </Div>
-        <Div $flexChild />
-        <TextInput
-          type="search"
-          placeholder="Find a gateway, host, route or service"
-          $width={{ width: "11xl" }}
-          value={state.search()}
-          onChange={(event) => state.setSearch(event.target.value)}
-        />
-        <Span $color="textMuted" $font={{ size: "s" }}>
-          Updated {new Date(loaded.loadedAt).toLocaleTimeString()}
-        </Span>
-        <PlainButton Icon={RefreshIcon} $onClick={refresh} $tooltip="Read the resources again now">
-          Refresh
-        </PlainButton>
+      <Div $flex={{ direction: "horizontal", gap: "xs", wrap: true }} $padding={{ horizontal: "l", vertical: "xs" }}>
+        <Badge small label={`${count(1)} gateways`} />
+        <Badge small label={`${count(2)} listeners`} />
+        <Badge small label={`${count(3)} routes`} />
+        <Badge small label={`${count(4)} backends`} />
+        {issues > 0 && <Badge small label={`${issues} need attention`} $backgroundColor="warning" $color="white" />}
       </Div>
 
-      {loaded.notServed.length > 0 && !gatewayApiMissing && (
+      {notShown.length > 0 && !gatewayApiMissing && (
         <Div $padding={{ horizontal: "l", vertical: "xs" }} $color="textMuted" $font={{ size: "s" }}>
-          Not served by this cluster, so not shown: {loaded.notServed.map((resource) => resource.split(".")[0]).join(", ")}
+          Not served by this cluster, so not shown: {notShown.join(", ")}
         </Div>
       )}
 
-      {loaded.failures.map((failure) => (
-        <Div key={failure.resource} $padding={{ horizontal: "l", vertical: "xs" }} $color="warning" $font={{ size: "s" }}>
-          Could not list {failure.resource}: {failure.message}
+      {snapshot.errors.map((failure) => (
+        <Div key={failure.what} $padding={{ horizontal: "l", vertical: "xs" }} $color="warning" $font={{ size: "s" }}>
+          Could not list {failure.what}: {failure.message}
         </Div>
       ))}
 
@@ -153,7 +128,7 @@ const GatewayMapLoaded = observer(({ clusterId }: { clusterId: string }) => {
           {gatewayApiMissing ? (
             <EmptyState title="This cluster does not serve the Gateway API" text="Install the Gateway API CRDs and enable Cilium's gateway controller (gatewayAPI.enabled=true)." />
           ) : topology.nodes.length === 0 ? (
-            <EmptyState title="No gateways yet" text="Create a GatewayClass for io.cilium/gateway-controller and a Gateway, and they will show here." />
+            <EmptyState title="No gateways yet" text="Create a GatewayClass for io.cilium/gateway-controller and a Gateway in the Gateway Designer, and they will show here." />
           ) : (
             <Canvas
               nodes={layout.nodes}
@@ -280,7 +255,10 @@ const NodeCard = ({ node, selected, dimmed, onSelect }: { node: PositionedNode; 
 );
 
 const NodeDetails = ({ clusterId, node, onClose }: { clusterId: string; node: MapNode; onClose: () => void }) => {
-  const openResource = useInject(openGatewayResourceInjectable)();
+  const actions = useInject(resourceActionsInjectable)();
+  const openPage = useInject(openCiliumPageInjectable)();
+  const openResource = (ref: ResourceRef) => void actions.openRef(clusterId, ref);
+  const openInDesigner = (ref: ResourceRef) => void openPage(clusterId, "gateway-designer", { name: ref.name, namespace: ref.namespace, kind: ref.kind });
 
   return (
     <Div
@@ -308,11 +286,16 @@ const NodeDetails = ({ clusterId, node, onClose }: { clusterId: string; node: Ma
         </Div>
       </Div>
 
-      <Div $flex={{ direction: "horizontal", gap: "s" }}>
-        {node.ref && (
-          <PrimaryButton $onClick={() => void openResource(clusterId, node.ref!)}>
-            Open {node.ref.kind}
+      <Div $flex={{ direction: "horizontal", gap: "s", wrap: true }}>
+        {node.ref && designerKindNames.includes(node.ref.kind) && (
+          <PrimaryButton Icon={EditIcon} $onClick={() => openInDesigner(node.ref!)}>
+            Edit in designer
           </PrimaryButton>
+        )}
+        {node.ref && (
+          <PlainButton Icon={LinkIcon} $onClick={() => openResource(node.ref!)}>
+            Open {node.ref.kind}
+          </PlainButton>
         )}
         <PlainButton $onClick={onClose}>Close</PlainButton>
       </Div>
@@ -357,7 +340,7 @@ const NodeDetails = ({ clusterId, node, onClose }: { clusterId: string; node: Ma
                   </Span>
                 )}
               </Div>
-              <PlainButton $onClick={() => void openResource(clusterId, related.ref)}>Open</PlainButton>
+              <PlainButton $onClick={() => openResource(related.ref)}>Open</PlainButton>
             </Div>
           ))}
         </Section>

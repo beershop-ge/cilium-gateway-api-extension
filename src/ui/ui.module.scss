@@ -1,0 +1,302 @@
+// Colours come from the variables Lens's own theme sets (the same ones element-components map its roles to),
+// so everything here follows the light and dark themes.
+
+.page {
+  height: 100%;
+  min-height: 0;
+  color: var(--grey20);
+  background: var(--grey100);
+}
+
+.scroll {
+  min-height: 0;
+  overflow: auto;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.wrap {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.mono {
+  font-family: var(--font-monospace, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    font-weight: 600;
+    padding: 6px 10px;
+    background: var(--grey80);
+    border-bottom: 1px solid var(--grey60);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--grey70);
+    vertical-align: top;
+  }
+
+  tbody tr {
+    cursor: default;
+  }
+
+  tbody tr.clickable {
+    cursor: pointer;
+  }
+
+  tbody tr:hover td {
+    background: var(--grey80);
+  }
+
+  tbody tr.selected td {
+    background: var(--grey70);
+  }
+
+  tbody tr:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+.sortable {
+  cursor: pointer;
+}
+
+.compactTable {
+  border-collapse: collapse;
+
+  td {
+    padding: 2px 12px 2px 0;
+    vertical-align: top;
+  }
+}
+
+.drawer {
+  width: min(560px, 50%);
+  min-width: 360px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--grey60);
+  background: var(--grey80);
+  min-height: 0;
+}
+
+.codeEditor {
+  display: flex;
+  min-height: 0;
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  background: var(--grey100);
+  overflow: hidden;
+
+  .gutter {
+    padding: 8px 6px;
+    text-align: right;
+    color: var(--grey40);
+    background: var(--grey80);
+    user-select: none;
+    overflow: hidden;
+    white-space: pre;
+    line-height: 18px;
+  }
+
+  .errorLine {
+    color: var(--critical);
+    font-weight: 700;
+  }
+
+  textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 8px;
+    color: var(--grey20);
+    background: transparent;
+    line-height: 18px;
+    white-space: pre;
+    overflow: auto;
+    tab-size: 2;
+  }
+}
+
+.codeView {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  background: var(--grey100);
+  overflow: auto;
+  white-space: pre;
+  line-height: 18px;
+}
+
+.diff {
+  margin: 0;
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  background: var(--grey100);
+  overflow: auto;
+  line-height: 18px;
+
+  .line {
+    display: flex;
+    white-space: pre;
+  }
+
+  .number {
+    width: 40px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-right: 6px;
+    color: var(--grey40);
+    user-select: none;
+  }
+
+  .sign {
+    width: 16px;
+    flex-shrink: 0;
+    text-align: center;
+    user-select: none;
+  }
+
+  .add {
+    background: var(--successTint);
+  }
+
+  .remove {
+    background: var(--criticalTint);
+  }
+
+  .hunkGap {
+    color: var(--grey40);
+    padding: 2px 8px;
+    background: var(--grey80);
+  }
+}
+
+.select {
+  appearance: auto;
+  width: 100%;
+  min-height: 28px;
+  padding: 3px 6px;
+  color: var(--grey20);
+  background: var(--grey80);
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  font: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+  }
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  input {
+    margin: 0;
+    accent-color: var(--primary);
+  }
+}
+
+.callout {
+  border-left: 3px solid currentColor;
+}
+
+.dropZone {
+  border: 2px dashed var(--grey60);
+  border-radius: 6px;
+  transition: border-color 120ms, background 120ms;
+}
+
+.dropZoneActive {
+  border-color: var(--primary);
+  background: var(--grey80);
+}
+
+.draggable {
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.formIndent {
+  border-left: 2px solid var(--grey60);
+  padding-left: 12px;
+  margin-left: 2px;
+}
+
+.fieldError {
+  color: var(--critical);
+}
+
+.fieldWarning {
+  color: var(--warning);
+}
+
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--grey70);
+  overflow: hidden;
+
+  > div {
+    height: 100%;
+    background: var(--primary);
+  }
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid var(--grey60);
+  border-radius: 6px;
+  background: var(--grey80);
+}
+
+.textArea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  color: var(--grey20);
+  background: var(--grey100);
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  font: inherit;
+  resize: vertical;
+}

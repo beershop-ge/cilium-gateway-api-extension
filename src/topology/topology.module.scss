@@ -1,0 +1,276 @@
+// Every colour comes from Lens's theme variables, so React Flow follows the light and dark themes.
+
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid var(--grey70);
+}
+
+.canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 320px;
+}
+
+.flow {
+  --xy-background-color: var(--grey100);
+  --xy-background-pattern-color: var(--grey70);
+  --xy-node-color: var(--grey20);
+  --xy-node-background-color: var(--grey80);
+  --xy-node-border: 1px solid var(--grey60);
+  --xy-node-border-radius: 6px;
+  --xy-node-boxshadow-selected: 0 0 0 2px var(--primary);
+  --xy-edge-stroke: var(--grey50);
+  --xy-edge-stroke-selected: var(--primary);
+  --xy-edge-label-background-color: var(--grey90);
+  --xy-edge-label-color: var(--grey20);
+  --xy-handle-background-color: var(--grey50);
+  --xy-handle-border-color: var(--grey80);
+  --xy-minimap-background-color: var(--grey90);
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--grey100) 65%, transparent);
+  --xy-minimap-mask-stroke-color: var(--primary);
+  --xy-minimap-node-background-color: var(--grey60);
+  --xy-minimap-node-stroke-color: var(--grey60);
+  --xy-controls-button-background-color: var(--grey80);
+  --xy-controls-button-background-color-hover: var(--grey70);
+  --xy-controls-button-color: var(--grey20);
+  --xy-controls-button-color-hover: var(--grey10);
+  --xy-controls-button-border-color: var(--grey60);
+  --xy-controls-box-shadow: none;
+  --xy-attribution-background-color: transparent;
+  --xy-selection-background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  --xy-selection-border: 1px dotted var(--primary);
+
+  background: var(--grey100);
+  color: var(--grey20);
+
+  :global(.react-flow__edge-textbg) {
+    fill: var(--grey90);
+  }
+
+  :global(.react-flow__edge-text) {
+    fill: var(--grey20);
+    font-size: 10px;
+  }
+
+  :global(.react-flow__controls) {
+    border: 1px solid var(--grey60);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  :global(.react-flow__minimap) {
+    border: 1px solid var(--grey60);
+    border-radius: 4px;
+  }
+
+  :global(.react-flow__edge.dimmed),
+  :global(.react-flow__node.dimmed) {
+    opacity: 0.18;
+  }
+
+  :global(.react-flow__node) {
+    transition: opacity 120ms ease-in-out;
+  }
+}
+
+.node {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--grey60);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: var(--grey80);
+  color: var(--grey20);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.node:hover {
+  border-color: var(--grey40);
+}
+
+.ok {
+  border-left-color: var(--success);
+}
+
+.warn {
+  border-color: var(--warning);
+}
+
+.error {
+  border-color: var(--critical);
+  border-width: 2px;
+  border-left-width: 4px;
+}
+
+.unknown {
+  border-left-color: var(--grey50);
+}
+
+.missing {
+  border-style: dashed;
+}
+
+.selected {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.matched {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.kindLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--grey40);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--grey40);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.dotOk {
+  background: var(--success);
+}
+
+.dotWarn {
+  background: var(--warning);
+}
+
+.dotError {
+  background: var(--critical);
+}
+
+.dotUnknown {
+  background: var(--grey50);
+}
+
+.panel {
+  width: 380px;
+  flex: none;
+  overflow: auto;
+  border-left: 1px solid var(--grey70);
+  background: var(--grey90);
+}
+
+.legend {
+  background: var(--grey90);
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--grey20);
+  max-width: 240px;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 18px;
+}
+
+.legendLine {
+  width: 28px;
+  height: 0;
+  border-top: 2px solid var(--grey50);
+  flex: none;
+}
+
+.lineConfig {
+  border-top-style: dotted;
+}
+
+.lineBridged {
+  border-top-style: dashed;
+}
+
+.lineForwarded {
+  border-top: 3px dashed var(--success);
+}
+
+.lineDropped {
+  border-top: 3px dashed var(--critical);
+}
+
+.lineMixed {
+  border-top: 3px dashed var(--warning);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--grey70);
+  max-height: 220px;
+  overflow: auto;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.filterList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px 16px;
+}
+
+.neighbour {
+  cursor: pointer;
+  color: var(--primary);
+}
+
+.neighbour:hover {
+  text-decoration: underline;
+}

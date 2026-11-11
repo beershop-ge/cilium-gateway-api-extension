@@ -1,0 +1,108 @@
+.card {
+  border: 1px solid var(--grey60);
+  border-radius: 6px;
+  background: var(--grey80);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subCard {
+  border: 1px solid var(--grey60);
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.grow {
+  flex: 1 1 160px;
+  min-width: 120px;
+}
+
+.narrow {
+  flex: 0 0 110px;
+}
+
+.medium {
+  flex: 0 1 200px;
+  min-width: 140px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.listColumn {
+  min-width: 0;
+  overflow: auto;
+}
+
+.issue {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.shareBar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--grey60);
+
+  > span {
+    display: block;
+    height: 100%;
+  }
+}
+
+.listenerTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--grey60);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+
+  tr.expanded td {
+    border-bottom: 1px solid var(--grey60);
+  }
+}
+
+.relations {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  align-items: start;
+}
+
+.relationNode {
+  border: 1px solid var(--grey60);
+  border-left-width: 4px;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: var(--grey80);
+  overflow-wrap: anywhere;
+}

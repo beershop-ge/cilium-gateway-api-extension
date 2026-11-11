@@ -1,3 +1,4 @@
+import { itemsOf, type Snapshot as ClusterSnapshot } from "../kube/snapshot";
 import type { KindName } from "./kinds";
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the snapshot is kubectl's JSON, read defensively */
@@ -65,6 +66,22 @@ export const snapshotResources = [
 ] as const;
 
 export type SnapshotResource = (typeof snapshotResources)[number];
+
+/** The map's snapshot from the composite read the designer shares, keyed by kind or builtin name there. */
+export const fromClusterSnapshot = (snapshot: ClusterSnapshot): Snapshot => ({
+  "gatewayclasses.gateway.networking.k8s.io": itemsOf(snapshot, "GatewayClass"),
+  "gateways.gateway.networking.k8s.io": itemsOf(snapshot, "Gateway"),
+  "listenersets.gateway.networking.k8s.io": itemsOf(snapshot, "ListenerSet"),
+  "httproutes.gateway.networking.k8s.io": itemsOf(snapshot, "HTTPRoute"),
+  "grpcroutes.gateway.networking.k8s.io": itemsOf(snapshot, "GRPCRoute"),
+  "tlsroutes.gateway.networking.k8s.io": itemsOf(snapshot, "TLSRoute"),
+  "tcproutes.gateway.networking.k8s.io": itemsOf(snapshot, "TCPRoute"),
+  "udproutes.gateway.networking.k8s.io": itemsOf(snapshot, "UDPRoute"),
+  "ciliumenvoyconfigs.cilium.io": itemsOf(snapshot, "CiliumEnvoyConfig"),
+  "ciliumloadbalancerippools.cilium.io": itemsOf(snapshot, "CiliumLoadBalancerIPPool"),
+  services: itemsOf(snapshot, "services"),
+  "endpointslices.discovery.k8s.io": itemsOf(snapshot, "endpointslices.discovery.k8s.io"),
+});
 
 export const columns = ["Gateway classes", "Gateways", "Listeners", "Routes", "Backends"] as const;
 
