@@ -1,6 +1,6 @@
 {
   "name": "cilium-ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Manage Cilium from Lens: Gateway API designer, network policy builder, live topology, BGP, LB-IPAM, Hubble flows, and schema-driven editing of every Cilium CRD.",
   "keywords": [
     "lens-extension",
