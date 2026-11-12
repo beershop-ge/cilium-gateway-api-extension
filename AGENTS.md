@@ -4,7 +4,7 @@
 
 The scaffold ships with a pre-built `dist/index.js` placeholder, so the extension loads as soon as Lens registers it. `src/index.ts` is the TypeScript source that mirrors that placeholder — edit it to replace the placeholder with your own code.
 
-## Extension development instructions — read this first
+##### Extension development instructions — read this first
 
 > `~/.k8slens/extensions/extension-development-instructions/README.md` is **the** definitive source on how to author a Lens extension. Lens regenerates it on every app load against the host build you're developing against. It documents the build loop, the conventions every extension follows (features, injectables, MobX, React), and enumerates every supported surface (top-bar items, status-bar items, notifications, commands, routes, preferences pages, …) with the exact tokens, factories, and code samples to use.
 >
