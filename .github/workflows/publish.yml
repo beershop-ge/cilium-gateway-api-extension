@@ -1,0 +1,41 @@
+name: Publish to npm
+
+on:
+  pull_request:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-publish:
+    if: github.event_name == 'pull_request' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm install --global npm@11
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+
+      - name: Check release version
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          node -e "if (process.env.RELEASE_TAG !== 'v' + require('./package.json').version) process.exit(1)"
+
+      - name: Publish
+        if: github.event_name == 'release'
+        run: npm publish --access public
