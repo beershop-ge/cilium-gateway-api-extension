@@ -18,7 +18,7 @@ import {
   ReactFlowProvider,
   useReactFlow,
   type Viewport,
-} from "@xyflow/react";
+} from "../vendor/xyflow-react";
 import { observer } from "mobx-react";
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { Health } from "../common/conditions";

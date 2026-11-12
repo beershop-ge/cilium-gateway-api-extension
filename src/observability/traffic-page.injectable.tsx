@@ -2,7 +2,7 @@ import { Div, Span } from "@k8slens/element-components";
 import { CloseIcon } from "@k8slens/icon";
 import { PlainButton } from "@k8slens/input-components";
 import { getInjectable2 } from "@k8slens/injectable";
-import { Background, Controls, type Edge, Handle, MarkerType, type Node, type NodeProps, Position, ReactFlow } from "@xyflow/react";
+import { Background, Controls, type Edge, Handle, MarkerType, type Node, type NodeProps, Position, ReactFlow } from "../vendor/xyflow-react";
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
 import { ciliumPageInjectionToken, type PageProps } from "../navigation/pages";

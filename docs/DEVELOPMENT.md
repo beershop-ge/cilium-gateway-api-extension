@@ -28,7 +28,7 @@ grep -E 'Uncaught error|Unhandled promise rejection' "$LOG" | tail -5
 
 ## Dependencies
 
-`react`, `mobx`, `mobx-react` and every `@k8slens/*` package are served by Lens itself; their ranges in `package.json` must include the versions the running Lens serves (`npm run build` checks; `npx lens-extension-dependencies-check --fix` rewrites them). `yaml` and `@xyflow/react` are the extension's own dependencies, kept external by the build and installed into the extension's `node_modules` (Lens installs them when a user installs from the marketplace; the zip ships them).
+`react`, `mobx`, `mobx-react` and every `@k8slens/*` package are served by Lens itself; their ranges in `package.json` must include the versions the running Lens serves (`npm run build` checks; `npx lens-extension-dependencies-check --fix` rewrites them). `yaml` is the extension's own runtime dependency, kept external and installed into its `node_modules` (Lens installs it from the marketplace; the zip ships it). `@xyflow/react` is a dev dependency: `npm run vendor` pre-bundles it into `src/vendor/` with React left external, because a package required from `node_modules` would get a second copy of React rather than Lens's ("Cannot read properties of null (reading 'useState')"). Any future React library must be vendored the same way.
 
 ## Tests
 

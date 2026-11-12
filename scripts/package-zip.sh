@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 
 name=$(node -p "require('./package.json').name")
 version=$(node -p "require('./package.json').version")
-staging=$(mktemp -d)
+staging="$PWD/release/.staging"; rm -rf "$staging"; mkdir -p "$staging"
 trap 'rm -rf "$staging"' EXIT
 
 npm run build
@@ -30,11 +30,20 @@ own_deps=$(node -e '
     .map(([name, range]) => `${name}@${range}`).join(" "));
 ' 2>/dev/null || true)
 
-if [ -n "$own_deps" ]; then
-  (cd "$target" && mkdir -p deps-install && cd deps-install && echo '{"name":"deps","version":"0.0.0","private":true}' > package.json \
-    && npm install --omit=dev --legacy-peer-deps --ignore-scripts --no-audit --no-fund --no-package-lock $own_deps >/dev/null \
-    && mv node_modules ../node_modules && cd .. && rm -rf deps-install)
-fi
+# Copied from node_modules at the installed versions, with whatever they depend on in turn.
+copy_dep() {
+  local dep="$1"
+  [ -d "$target/node_modules/$dep" ] && return
+  mkdir -p "$target/node_modules/$(dirname "$dep")"
+  cp -R "node_modules/$dep" "$target/node_modules/$dep"
+  for sub in $(node -p "Object.keys(require('./node_modules/$dep/package.json').dependencies || {}).join(' ')"); do
+    copy_dep "$sub"
+  done
+}
+
+for spec in $own_deps; do
+  copy_dep "${spec%@*}"
+done
 
 mkdir -p release
 rm -f "release/$name-$version.zip"
